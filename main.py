@@ -1,5 +1,32 @@
 import numpy as np
 
+def sigmoid(sequence1):
+    return (1 / (1 + np.exp(-sequence1)))
+
+def tryInput(X):
+    while True:
+        try:
+            testValue = int(input("Enter your value to test: "))
+            outWeight = predictIfNext(X, testValue)
+            print(f"The input value {testValue} has a weight of {outWeight}")
+        except:
+            print("Enter an integer value")
+            tryInput(X)
+
+def predictIfNext(X, inVal):
+    newIn = np.array([[inVal]])
+    Xextended = np.vstack((X, newIn))
+
+    # Compute forward pass for the extended sequence
+    hiddenLayerIn_extended = np.dot(Xextended, WHidden) + bHidden
+    hiddenLayerOut_extended = sigmoid(hiddenLayerIn_extended)
+    outLayerIn_extended = np.dot(hiddenLayerOut_extended, WOut) + bOut
+    predOut_extended = sigmoid(outLayerIn_extended)
+
+    return predOut_extended[-1]
+
+
+
 sequence1 = np.array([[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15]])
 sequence2 = np.array([[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[15],[16]])
 
@@ -18,8 +45,6 @@ bHidden = np.zeros((1, hiddenSize))
 WOut = np.random.randn(hiddenSize, outSize)
 bOut = np.zeros((1, outSize))
 
-def sigmoid(sequence1):
-    return (1 / (1 + np.exp(-sequence1)))
 
 # Train the ANN
 for epoch in range(2000):
@@ -45,20 +70,9 @@ for epoch in range(2000):
 
 
 # Print final predicted output
-print("Predicted output strengths after training:", predOut)
+outFormatted = out = str(predOut).replace('\n', '')
+print("Predicted output strengths after training:", outFormatted)
 
-
-def predictIfNext(X, inVal):
-    newIn = np.array([[inVal]])
-    Xextended = np.vstack((X, newIn))
-
-    # Compute forward pass for the extended sequence
-    hiddenLayerIn_extended = np.dot(Xextended, WHidden) + bHidden
-    hiddenLayerOut_extended = sigmoid(hiddenLayerIn_extended)
-    outLayerIn_extended = np.dot(hiddenLayerOut_extended, WOut) + bOut
-    predOut_extended = sigmoid(outLayerIn_extended)
-
-    return predOut_extended[-1]
 
 # Using the weights, guess the next value in the sequence1 Array
 nextVal = 0
@@ -68,5 +82,6 @@ for i in range(0, 100):
 
 maxIndex = max(weights, key=lambda x: x['value'])['index']
 out = str(sequence1).replace('\n', '')
+print(f"Based on the trained model, the next value in the array {out} is most likely {maxIndex}")
 
-print(f"Based on the trained model, the next value in the array {out} is most likely {maxIndex}" )
+tryInput(sequence1)
